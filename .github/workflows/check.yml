@@ -1,0 +1,26 @@
+name: Roma bilet kontrol
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # 15 dk'da bir tetiklenir, is icinde 5 dk'da bir kontrol eder
+  workflow_dispatch:          # elle de calistirilabilir
+
+concurrency:
+  group: ticket-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+      TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: 5 dakikada bir kontrol (3 tur)
+        run: |
+          for i in 1 2 3; do
+            echo "--- tur $i ---"
+            ./notify_telegram.sh || true
+            [ $i -lt 3 ] && sleep 300
+          done
