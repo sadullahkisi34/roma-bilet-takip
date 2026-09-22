@@ -22,5 +22,5 @@ jobs:
           for i in 1 2 3; do
             echo "--- tur $i ---"
             ./notify_telegram.sh || true
-            [ $i -lt 3 ] && sleep 300
+            if [ $i -lt 3 ]; then sleep 300; fi
           done
